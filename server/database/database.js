@@ -1,0 +1,61 @@
+import sqlite from "sqlite3"
+import path from "path"
+import { fileURLToPath } from "url"
+
+// find the directory name of the current module
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const sqlite3 = sqlite.verbose()
+
+// create a new database object
+const database = new sqlite3.Database(path.join(__dirname, "chat_app.db"), (err) => {
+    if (err) console.error("Failed to connect to the database: ", err.message)
+})
+
+database.serialize(() => {
+    database.run(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+
+    database.run(`
+        CREATE TABLE IF NOT EXISTS friends (
+            user1_username TEXT NOT NULL,
+            user2_username TEXT NOT NULL,
+            since DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user1_username, user2_username),
+            FOREIGN KEY (user1_username) REFERENCES users(username) ON DELETE CASCADE,
+            FOREIGN KEY (user2_username) REFERENCES users(username) ON DELETE CASCADE
+        )
+    `);
+
+    database.run(`
+        CREATE TABLE IF NOT EXISTS friend_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sender_username TEXT NOT NULL,
+            receiver_username TEXT NOT NULL,
+            status TEXT CHECK( status IN ('pending', 'accepted', 'rejected') ) DEFAULT 'pending',
+            sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (sender_username) REFERENCES users(username) ON DELETE CASCADE,
+            FOREIGN KEY (receiver_username) REFERENCES users(username) ON DELETE CASCADE,
+            UNIQUE(sender_username, receiver_username)
+        )
+    `);
+
+    database.run(`
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            author TEXT NOT NULL,
+            content TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(author) REFERENCES users(username)
+        )
+    `);
+});
+
+export default database
