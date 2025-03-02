@@ -12,7 +12,7 @@ const Login = () => {
     async function login() {
         if (!username || !password) return console.log("Username and password are required.");
 
-        const res = await fetch('http://localhost:3001/login', {
+        const res = await fetch('https://react-chat-app-g048.onrender.com/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })

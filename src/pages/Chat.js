@@ -4,7 +4,7 @@ import { io } from "socket.io-client"
 
 import "../styles/Chat.css"
 
-const socket = io("http://localhost:3001", { withCredentials: true })
+const socket = io("https://react-chat-app-g048.onrender.com", { withCredentials: true });
 
 function Chat() {
     const token = sessionStorage.getItem("token")

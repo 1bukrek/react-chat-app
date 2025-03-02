@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import { Button, Card, Container, Form, FormGroup } from 'react-bootstrap'
 
-
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -11,7 +10,7 @@ const Register = () => {
 
     async function register() {
         if (!username || !password) return console.log("Username and password are required.")
-        const res = await fetch('http://localhost:3001/register', {
+        const res = await fetch('https://react-chat-app-g048.onrender.com/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),

@@ -15,7 +15,7 @@ const app = express()
 const server = http.createServer(app)
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://react-chat-app-g048.onrender.com",
         methods: ["GET", "POST"],
         credentials: true,
     },
@@ -28,7 +28,7 @@ app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) return;
 
@@ -48,7 +48,7 @@ app.post('/register', async (req, res) => {
 
 });
 
-app.post('/login', (req, res) => {
+app.post('/api/login', (req, res) => {
     const { username, password } = req.body
     if (!username || !password) return res.json({ success: false, message: "Username and password are required." })
 
@@ -119,6 +119,7 @@ io.on("connection", (socket) => {
     })
 })
 
-server.listen(3001, () => {
-    console.warn("SERVER IS RUNNING ON: http://localhost:3001")
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+    console.warn("SERVER IS RUNNING ON: 3001 PORT")
 })
