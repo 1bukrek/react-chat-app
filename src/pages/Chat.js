@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { InputGroup, ListGroup, Nav, Form, Button, ListGroupItem } from "react-bootstrap"
+import FriendRequests from "../components/sidebar/FriendRequests.js"
 
 import "../styles/Chat.css"
 
@@ -42,7 +43,7 @@ function Chat() {
         });
 
         return () => {
-            socket.off("create-message"); // Bellek sızıntısını önlemek için temizleme
+            socket.off("create-message");
         };
     }, [])
 
@@ -109,26 +110,9 @@ function Chat() {
                 )}
 
                 {activeTab === 2 && (
-                    <div>
-                        <ListGroup>
-                            {userRequests.length > 0 && userRequests.map((request, index) => (
-                                <ListGroupItem key={index} className="m-2 p-1 d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{request.sender}</strong>
-                                        <p className="mb-0 text-secondary"><small>Incoming Friend Request</small></p>
-                                    </div>
-                                    <div>
-                                        <Button className="bg-transparent" variant="success" onClick={() => acceptFriendRequest(request.sender)}>
-                                            <i className="bi bi-check2 text-success p-0"></i>
-                                        </Button>
-                                        <Button className="bg-transparent" variant="danger" onClick={() => rejectFriendRequest(request.sender)}>
-                                            <i className="bi bi-x text-danger p-0"></i>
-                                        </Button>
-                                    </div>
-                                </ListGroupItem>
-                            ))}
-                        </ListGroup>
-                    </div>
+                    <>
+                        <FriendRequests userRequests={userRequests} acceptFriendRequest={acceptFriendRequest} rejectFriendRequest={rejectFriendRequest} setUserRequests={setUserRequests} />
+                    </>
                 )}
             </div>
 
