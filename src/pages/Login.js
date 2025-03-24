@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-
 import { Alert, Button, Card, Container, Form } from 'react-bootstrap'
 
 const Login = () => {
@@ -11,11 +10,11 @@ const Login = () => {
 
     async function login() {
         if (!username || !password) return console.log("Username and password are required.");
-
-        const res = await fetch('https://react-chat-app-g048.onrender.com/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+        const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:3001";
+        const res = await fetch(`${SERVER_URL}/api/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
         });
 
         const { success, message, token, user } = await res.json();
@@ -48,7 +47,7 @@ const Login = () => {
                 <p className='display-5 fw-bold'>Login</p>
                 <Card className='p-3'>
                     <Form noValidate validated={validated} onSubmit={controlValidation}>
-                        <Form.Group controlId='validationCustom01'>
+                        <Form.Group>
                             <Form.Label htmlFor="inputUsername">Username</Form.Label>
                             <Form.Control
                                 type="text"
@@ -59,7 +58,7 @@ const Login = () => {
                             />
                             <Form.Control.Feedback type='invalid'>Please provide a proper username.</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group controlId='validationCustom01'>
+                        <Form.Group>
                             <Form.Label className='mt-3' htmlFor="inputPassword">Password</Form.Label>
                             <Form.Control
                                 type="password"

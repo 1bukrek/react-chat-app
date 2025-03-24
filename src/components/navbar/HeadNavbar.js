@@ -1,8 +1,7 @@
 import React from 'react'
-
 import { Nav, Container, Navbar } from 'react-bootstrap'
 
-const ChatNavbar = () => {
+function HeadNavbar() {
     return (
         <div>
             <Navbar bg="dark" data-bs-theme="dark">
@@ -18,4 +17,4 @@ const ChatNavbar = () => {
     )
 }
 
-export default ChatNavbar
+export default HeadNavbar

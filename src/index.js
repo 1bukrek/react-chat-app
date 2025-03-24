@@ -7,7 +7,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Chat from './pages/Chat.js';
 import Login from './pages/Login.js';
 import Register from './pages/Register.js';
-import ChatNavbar from './components/navbar/Navbar.js';
+import HeadNavbar from './components/navbar/HeadNavbar.js';
 
 const router = createBrowserRouter([
   { path: '/', element: <Chat /> },
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <>
-    <ChatNavbar />
+    <HeadNavbar />
     <RouterProvider router={router} />
   </>
 );

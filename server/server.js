@@ -1,37 +1,49 @@
 import express from "express"
 import http from "http"
 import { Server } from "socket.io"
+import cors from "cors"
 
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
 import database from "./database/database.js"
 import { get_user_by_username, accept_friend_request, reject_friend_request } from "./utils/users.js"
+
 import { create_message } from "./utils/message.js"
 
 import path from "path";
+import "dotenv/config";
 
 const app = express()
 const server = http.createServer(app)
+
+// CORS settings
+app.use(cors({
+    origin: process.env.CLIENT_SERVER_URL || "http://localhost:3000", // react frontend url
+    methods: ['GET', 'POST'],
+    credentials: true,
+}));
+
+// JSON body parser
+app.use(express.json())
+
+// CORS settings for socket.io
 const io = new Server(server, {
     cors: {
-        origin: "https://react-chat-app-g048.onrender.com",
+        origin: process.env.CLIENT_SERVER_URL || "http://localhost:3000", // react frontend url
         methods: ["GET", "POST"],
         credentials: true,
     },
 });
 
-app.use(express.json())
+// serving react build folder
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../build")));
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
 
+// API endpoints
 app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) return;
-
     database.get(
         "SELECT * FROM users WHERE users.username = ?", [username], (err, row) => {
             if (err) return res.json({ success: false, message: "An error occured in database, please try again later." })
@@ -45,22 +57,18 @@ app.post('/api/register', async (req, res) => {
             })
         }
     )
-
 });
 
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body
     if (!username || !password) return res.json({ success: false, message: "Username and password are required." })
-
     // find the user in the database by username
     database.get(
         "SELECT * FROM users WHERE username = ?", [username], (err, row) => {
             if (err) return res.json({ success: false, message: "An error occured in database, please try again later." })
             if (!row) return res.json({ success: false, message: "Invalid username or password." })
-
             // compare the provided password with the hashed password from the database
             const password_match = bcrypt.compareSync(password, row.password)
-
             if (password_match) {
                 // create jsonwebtoken for one hour after successful login
                 const token = jwt.sign({ id: row.id, username: row.username }, "secretkey", { expiresIn: "1h" })
@@ -73,6 +81,12 @@ app.post('/api/login', (req, res) => {
         }
     )
 })
+
+// react frontend guidance
+// guide any request to index.html
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
 
 io.on("connection", (socket) => {
     socket.on("request-friends-list", function (username) {
@@ -119,7 +133,8 @@ io.on("connection", (socket) => {
     })
 })
 
-const PORT = process.env.PORT || 3001;
+// launching the server
+const PORT = process.env.PORT || 3001
 server.listen(PORT, () => {
-    console.warn("SERVER IS RUNNING ON: 3001 PORT")
+    console.warn(`SERVER IS RUNNING ON ${PORT} PORT.`)
 })

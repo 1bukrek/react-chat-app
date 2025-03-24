@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react"
 import { InputGroup, ListGroup, Nav, Form, Button, ListGroupItem } from "react-bootstrap"
-import { io } from "socket.io-client"
 
 import "../styles/Chat.css"
 
-const socket = io("https://react-chat-app-g048.onrender.com", { withCredentials: true });
+import { io } from "socket.io-client"
+
+const socket = io(process.env.REACT_APP_SERVER_URL || "http://localhost:3001", {
+    withCredentials: true,
+});
 
 function Chat() {
     const token = sessionStorage.getItem("token")
